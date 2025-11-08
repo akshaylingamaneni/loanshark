@@ -32,11 +32,12 @@ import {
   IconSearch,
   IconCopy,
 } from "@tabler/icons-react"
-import type { Market } from "@/lib/morpho/types"
+import type { BorrowerData } from "@/lib/morpho/types"
 import { toast } from "sonner"
 import * as React from "react"
 
-function formatCurrency(value: number): string {
+function formatCurrency(value: number | null): string {
+  if (value === null) return "-"
   if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`
   if (value >= 1e6) return `$${(value / 1e6).toFixed(2)}M`
   if (value >= 1e3) return `$${(value / 1e3).toFixed(2)}K`
@@ -47,30 +48,33 @@ function formatPercent(value: number): string {
   return `${(value * 100).toFixed(2)}%`
 }
 
-const columns: ColumnDef<Market>[] = [
+function formatAddress(address: string): string {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`
+}
+
+const columns: ColumnDef<BorrowerData>[] = [
   {
-    id: "market",
-    accessorFn: (row) => `${row.collateralAsset.symbol}/${row.loanAsset.symbol}`,
-    header: "Market",
+    id: "address",
+    accessorKey: "address",
+    header: "Address",
     enableSorting: false,
     filterFn: (row, id, value) => {
-      const marketName = `${row.original.collateralAsset.symbol}/${row.original.loanAsset.symbol}`.toLowerCase()
-      return marketName.includes(value.toLowerCase())
+      const address = row.original.address.toLowerCase()
+      return address.includes(value.toLowerCase())
     },
     cell: ({ row }) => {
-      const market = row.original
       const handleCopy = async () => {
         try {
-          await navigator.clipboard.writeText(market.uniqueKey)
-          toast.success("Market key copied to clipboard")
+          await navigator.clipboard.writeText(row.original.address)
+          toast.success("Address copied to clipboard")
         } catch (error) {
           toast.error("Failed to copy")
         }
       }
       return (
         <div className="flex items-center gap-2">
-          <span className="font-medium">
-            {market.collateralAsset.symbol}/{market.loanAsset.symbol}
+          <span className="font-mono text-sm">
+            {formatAddress(row.original.address)}
           </span>
           <Button
             variant="ghost"
@@ -85,14 +89,14 @@ const columns: ColumnDef<Market>[] = [
     },
   },
   {
-    accessorKey: "state.supplyAssetsUsd",
+    accessorKey: "borrowAssetsUsd",
     header: ({ column }) => (
       <Button
         variant="ghost"
         className="h-8 data-[state=open]:bg-accent -ml-3 hover:bg-transparent"
         onClick={() => column.toggleSorting()}
       >
-        <span>Supply</span>
+        <span>Borrowed (USD)</span>
         {column.getIsSorted() === "desc" ? (
           <IconArrowDown className="ml-2 size-4" />
         ) : column.getIsSorted() === "asc" ? (
@@ -102,70 +106,10 @@ const columns: ColumnDef<Market>[] = [
         )}
       </Button>
     ),
-    cell: ({ row }) => formatCurrency(row.original.state.supplyAssetsUsd),
+    cell: ({ row }) => formatCurrency(row.original.borrowAssetsUsd),
   },
   {
-    accessorKey: "state.borrowAssetsUsd",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="h-8 data-[state=open]:bg-accent -ml-3 hover:bg-transparent"
-        onClick={() => column.toggleSorting()}
-      >
-        <span>Borrow</span>
-        {column.getIsSorted() === "desc" ? (
-          <IconArrowDown className="ml-2 size-4" />
-        ) : column.getIsSorted() === "asc" ? (
-          <IconArrowUp className="ml-2 size-4" />
-        ) : (
-          <IconArrowsSort className="ml-2 size-4 opacity-50" />
-        )}
-      </Button>
-    ),
-    cell: ({ row }) => formatCurrency(row.original.state.borrowAssetsUsd),
-  },
-  {
-    accessorKey: "state.utilization",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="h-8 data-[state=open]:bg-accent -ml-3 hover:bg-transparent"
-        onClick={() => column.toggleSorting()}
-      >
-        <span>Utilization</span>
-        {column.getIsSorted() === "desc" ? (
-          <IconArrowDown className="ml-2 size-4" />
-        ) : column.getIsSorted() === "asc" ? (
-          <IconArrowUp className="ml-2 size-4" />
-        ) : (
-          <IconArrowsSort className="ml-2 size-4 opacity-50" />
-        )}
-      </Button>
-    ),
-    cell: ({ row }) => formatPercent(row.original.state.utilization),
-  },
-  {
-    accessorKey: "state.netSupplyApy",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        className="h-8 data-[state=open]:bg-accent -ml-3 hover:bg-transparent"
-        onClick={() => column.toggleSorting()}
-      >
-        <span>Supply APY</span>
-        {column.getIsSorted() === "desc" ? (
-          <IconArrowDown className="ml-2 size-4" />
-        ) : column.getIsSorted() === "asc" ? (
-          <IconArrowUp className="ml-2 size-4" />
-        ) : (
-          <IconArrowsSort className="ml-2 size-4 opacity-50" />
-        )}
-      </Button>
-    ),
-    cell: ({ row }) => formatPercent(row.original.state.netSupplyApy),
-  },
-  {
-    accessorKey: "state.netBorrowApy",
+    accessorKey: "borrowApy",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -182,12 +126,14 @@ const columns: ColumnDef<Market>[] = [
         )}
       </Button>
     ),
-    cell: ({ row }) => formatPercent(row.original.state.netBorrowApy),
+    cell: ({ row }) => formatPercent(row.original.borrowApy),
   },
 ]
 
-export function MarketsTable({ markets }: { markets: Market[] }) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+export function BorrowersTable({ borrowers }: { borrowers: BorrowerData[] }) {
+  const [sorting, setSorting] = React.useState<SortingState>([
+    { id: "borrowAssetsUsd", desc: true },
+  ])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
@@ -195,7 +141,7 @@ export function MarketsTable({ markets }: { markets: Market[] }) {
   })
 
   const table = useReactTable({
-    data: markets,
+    data: borrowers,
     columns,
     state: {
       sorting,
@@ -211,8 +157,8 @@ export function MarketsTable({ markets }: { markets: Market[] }) {
     getPaginationRowModel: getPaginationRowModel(),
   })
 
-  const marketColumn = table.getColumn("market")
-  const filterValue = (marketColumn?.getFilterValue() as string) ?? ""
+  const addressColumn = table.getColumn("address")
+  const filterValue = (addressColumn?.getFilterValue() as string) ?? ""
 
   React.useEffect(() => {
     if (filterValue !== undefined) {
@@ -226,9 +172,9 @@ export function MarketsTable({ markets }: { markets: Market[] }) {
         <div className="relative flex-1 max-w-sm">
           <IconSearch className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search markets..."
+            placeholder="Search borrowers..."
             value={filterValue}
-            onChange={(e) => marketColumn?.setFilterValue(e.target.value)}
+            onChange={(e) => addressColumn?.setFilterValue(e.target.value)}
             className="pl-9"
           />
         </div>
@@ -262,7 +208,7 @@ export function MarketsTable({ markets }: { markets: Market[] }) {
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No markets found.
+                  No borrowers found.
                 </TableCell>
               </TableRow>
             )}
@@ -276,7 +222,7 @@ export function MarketsTable({ markets }: { markets: Market[] }) {
             (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
             table.getFilteredRowModel().rows.length
           )}{" "}
-          of {table.getFilteredRowModel().rows.length} markets
+          of {table.getFilteredRowModel().rows.length} borrowers
         </div>
         <div className="flex items-center gap-2">
           <Button
