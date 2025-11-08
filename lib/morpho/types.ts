@@ -49,3 +49,19 @@ export type Market = {
   };
 };
 
+export type HistoricalApyPoint = {
+  x: number;
+  y: number;
+};
+
+export type TransactionType = "MarketBorrow" | "MarketRepay";
+
+export type MarketTransaction = {
+  hash: string;
+  timestamp: number | string;
+  type: TransactionType;
+  user: {
+    address: string;
+  };
+};
+

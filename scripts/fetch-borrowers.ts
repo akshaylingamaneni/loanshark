@@ -1,3 +1,4 @@
+import { getBorrowerTransactions } from "@/lib/morpho/borrower-transactions";
 import { getAllBorrowers } from "../lib/morpho/borrowers";
 import { getMarkets } from "../lib/morpho/markets";
 
@@ -16,7 +17,8 @@ async function main() {
   console.log("\nFetching borrowers from all markets...\n");
 
   const borrowers = await getAllBorrowers(137);
-
+  const transactions = await getBorrowerTransactions(borrowers[0].address, borrowers[0].marketKey, 137);
+  console.log(JSON.stringify(transactions, null, 2));
   console.log(`Found ${borrowers.length} borrowers across all markets\n`);
 
   // borrowers.forEach((borrower, index) => {
