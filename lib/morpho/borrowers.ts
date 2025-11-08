@@ -1,5 +1,5 @@
 import { query } from "./client";
-import type { BorrowerData, MarketPosition, MarketState } from "./types";
+import type { BorrowerData, MarketPosition, MarketState, Market } from "./types";
 import { getMarkets } from "./markets";
 
 const BORROWERS_QUERY = `
@@ -31,11 +31,11 @@ type BorrowersResponse = {
 };
 
 export async function getBorrowersForMarket(
-  marketKey: string,
+  market: Market,
   chainId: number
 ): Promise<BorrowerData[]> {
   const data = await query<BorrowersResponse>(BORROWERS_QUERY, {
-    key: marketKey,
+    key: market.uniqueKey,
     cid: chainId,
   });
 
@@ -43,18 +43,19 @@ export async function getBorrowersForMarket(
 
   return data.marketPositions.items.map((position) => ({
     address: position.user.address,
-    marketKey,
+    marketKey: market.uniqueKey,
     borrowShares: position.state.borrowShares,
     borrowAssets: position.state.borrowAssets,
     borrowAssetsUsd: position.state.borrowAssetsUsd,
     borrowApy,
+    market,
   }));
 }
 
 export async function getAllBorrowers(chainId: number = 137): Promise<BorrowerData[]> {
   const markets = await getMarkets([chainId]);
   const allBorrowers = await Promise.all(
-    markets.map((market) => getBorrowersForMarket(market.uniqueKey, chainId))
+    markets.map((market) => getBorrowersForMarket(market, chainId))
   );
 
   return allBorrowers.flat();

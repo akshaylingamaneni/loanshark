@@ -20,6 +20,7 @@ export type BorrowerData = {
   borrowAssets: string;
   borrowAssetsUsd: number | null;
   borrowApy: number;
+  market: Market;
 };
 
 export type MarketConfig = {
@@ -34,10 +35,10 @@ export type Market = {
   uniqueKey: string;
   loanAsset: {
     symbol: string;
-  } | null;
+  };
   collateralAsset: {
     symbol: string;
-  } | null;
+  };
   lltv: string;
   state: {
     supplyAssetsUsd: number;
@@ -45,6 +46,6 @@ export type Market = {
     utilization: number;
     netSupplyApy: number;
     netBorrowApy: number;
-  } | null;
+  };
 };
 

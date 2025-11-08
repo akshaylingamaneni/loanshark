@@ -11,24 +11,38 @@ const MARKETS_QUERY = `
     ) {
       items {
         uniqueKey
-      loanAsset { symbol }
-      collateralAsset { symbol }
-      lltv
-      state {
-        supplyAssetsUsd
-        borrowAssetsUsd
-        utilization
-        netSupplyApy
-        netBorrowApy
-      }
+        loanAsset { symbol }
+        collateralAsset { symbol }
+        lltv
+        state {
+          supplyAssetsUsd
+          borrowAssetsUsd
+          utilization
+          netSupplyApy
+          netBorrowApy
+        }
       }
     }
   }
 `;
 
+type MarketResponse = {
+  uniqueKey: string;
+  loanAsset: { symbol: string } | null;
+  collateralAsset: { symbol: string } | null;
+  lltv: string;
+  state: {
+    supplyAssetsUsd: number;
+    borrowAssetsUsd: number;
+    utilization: number;
+    netSupplyApy: number;
+    netBorrowApy: number;
+  } | null;
+};
+
 type MarketsResponse = {
   markets: {
-    items: Market[];
+    items: MarketResponse[];
   };
 };
 
@@ -38,8 +52,21 @@ export async function getMarkets(chainId: number[], first: number = 100): Promis
     first,
   });
 
-  return data.markets.items.filter(
-    (market) => market.loanAsset !== null && market.collateralAsset !== null && market.state !== null && market.state.supplyAssetsUsd > 0 && market.state.borrowAssetsUsd > 0
-  );
+  return data.markets.items
+    .filter(
+      (market) =>
+        market.loanAsset !== null &&
+        market.collateralAsset !== null &&
+        market.state !== null &&
+        market.state.supplyAssetsUsd > 0 &&
+        market.state.borrowAssetsUsd > 0
+    )
+    .map((market) => ({
+      uniqueKey: market.uniqueKey,
+      loanAsset: market.loanAsset!,
+      collateralAsset: market.collateralAsset!,
+      lltv: market.lltv,
+      state: market.state!,
+    }));
 }
 
