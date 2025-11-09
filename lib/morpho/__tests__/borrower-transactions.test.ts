@@ -118,24 +118,34 @@ describe("Borrower Transactions Queries", () => {
   }, 30000);
 
   it("should get first borrow timestamp correctly", () => {
+    const mockData = {
+      __typename: "MarketTransferTransactionData",
+      assets: "0",
+      assetsUsd: 0,
+      shares: "0",
+    };
+
     const transactions = [
       {
         hash: "0x1",
         timestamp: 1000,
         type: "MarketRepay" as const,
         user: { address: "0x123" },
+        data: mockData,
       },
       {
         hash: "0x2",
         timestamp: 500,
         type: "MarketBorrow" as const,
         user: { address: "0x123" },
+        data: mockData,
       },
       {
         hash: "0x3",
         timestamp: 1500,
         type: "MarketBorrow" as const,
         user: { address: "0x123" },
+        data: mockData,
       },
     ];
 
@@ -144,12 +154,20 @@ describe("Borrower Transactions Queries", () => {
   });
 
   it("should return null if no borrow transactions", () => {
+    const mockData = {
+      __typename: "MarketTransferTransactionData",
+      assets: "0",
+      assetsUsd: 0,
+      shares: "0",
+    };
+
     const transactions = [
       {
         hash: "0x1",
         timestamp: 1000,
         type: "MarketRepay" as const,
         user: { address: "0x123" },
+        data: mockData,
       },
     ];
 

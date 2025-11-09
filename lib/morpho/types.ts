@@ -35,15 +35,20 @@ export type Market = {
   uniqueKey: string;
   loanAsset: {
     symbol: string;
+    address: string;
+    decimals: number;
   };
   collateralAsset: {
     symbol: string;
+    address: string;
+    decimals: number;
   };
   lltv: string;
   state: {
     supplyAssetsUsd: number;
     borrowAssetsUsd: number;
     utilization: number;
+    borrowApy: number;
     netSupplyApy: number;
     netBorrowApy: number;
   };
@@ -63,5 +68,10 @@ export type MarketTransaction = {
   user: {
     address: string;
   };
+  data: {
+    __typename: string;
+    assets?: string | null;
+    assetsUsd?: number | null;
+    shares?: string | null;
+  };
 };
-

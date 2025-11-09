@@ -165,7 +165,7 @@ const columns: ColumnDef<Market>[] = [
     cell: ({ row }) => formatPercent(row.original.state.netSupplyApy),
   },
   {
-    accessorKey: "state.netBorrowApy",
+    accessorKey: "state.borrowApy",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -173,6 +173,26 @@ const columns: ColumnDef<Market>[] = [
         onClick={() => column.toggleSorting()}
       >
         <span>Borrow APY</span>
+        {column.getIsSorted() === "desc" ? (
+          <IconArrowDown className="ml-2 size-4" />
+        ) : column.getIsSorted() === "asc" ? (
+          <IconArrowUp className="ml-2 size-4" />
+        ) : (
+          <IconArrowsSort className="ml-2 size-4 opacity-50" />
+        )}
+      </Button>
+    ),
+    cell: ({ row }) => formatPercent(row.original.state.borrowApy),
+  },
+  {
+    accessorKey: "state.netBorrowApy",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        className="h-8 data-[state=open]:bg-accent -ml-3 hover:bg-transparent"
+        onClick={() => column.toggleSorting()}
+      >
+        <span>Net Borrow APY</span>
         {column.getIsSorted() === "desc" ? (
           <IconArrowDown className="ml-2 size-4" />
         ) : column.getIsSorted() === "asc" ? (
@@ -323,4 +343,3 @@ export function MarketsTable({ markets }: { markets: Market[] }) {
     </div>
   )
 }
-

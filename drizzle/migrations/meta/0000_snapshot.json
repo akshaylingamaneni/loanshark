@@ -1,0 +1,537 @@
+{
+  "id": "83a7ee4d-429c-4bfe-b6a9-082aae161189",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.borrower_daily_accruals": {
+      "name": "borrower_daily_accruals",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "borrower_address": {
+          "name": "borrower_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "market_key": {
+          "name": "market_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "day": {
+          "name": "day",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cap_apr_bps": {
+          "name": "cap_apr_bps",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "starting_principal_usd": {
+          "name": "starting_principal_usd",
+          "type": "numeric(30, 4)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ending_principal_usd": {
+          "name": "ending_principal_usd",
+          "type": "numeric(30, 4)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "actual_interest_usd": {
+          "name": "actual_interest_usd",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "capped_interest_usd": {
+          "name": "capped_interest_usd",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reimbursement_usd": {
+          "name": "reimbursement_usd",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "segments": {
+          "name": "segments",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "borrower_daily_accruals_borrower_day_idx": {
+          "name": "borrower_daily_accruals_borrower_day_idx",
+          "columns": [
+            {
+              "expression": "borrower_address",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "market_key",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "day",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "borrower_daily_accruals_market_key_markets_unique_key_fk": {
+          "name": "borrower_daily_accruals_market_key_markets_unique_key_fk",
+          "tableFrom": "borrower_daily_accruals",
+          "tableTo": "markets",
+          "columnsFrom": [
+            "market_key"
+          ],
+          "columnsTo": [
+            "unique_key"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.borrower_positions": {
+      "name": "borrower_positions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "borrower_address": {
+          "name": "borrower_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "market_key": {
+          "name": "market_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "borrow_assets": {
+          "name": "borrow_assets",
+          "type": "numeric(40, 12)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "borrow_assets_usd": {
+          "name": "borrow_assets_usd",
+          "type": "numeric(30, 4)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "loan_asset_price_usd": {
+          "name": "loan_asset_price_usd",
+          "type": "numeric(30, 8)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "borrow_shares": {
+          "name": "borrow_shares",
+          "type": "numeric(40, 0)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "borrow_apy_snapshot": {
+          "name": "borrow_apy_snapshot",
+          "type": "numeric(20, 10)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "last_snapshot_at": {
+          "name": "last_snapshot_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "borrower_positions_borrower_market_idx": {
+          "name": "borrower_positions_borrower_market_idx",
+          "columns": [
+            {
+              "expression": "borrower_address",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "market_key",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "borrower_positions_market_key_markets_unique_key_fk": {
+          "name": "borrower_positions_market_key_markets_unique_key_fk",
+          "tableFrom": "borrower_positions",
+          "tableTo": "markets",
+          "columnsFrom": [
+            "market_key"
+          ],
+          "columnsTo": [
+            "unique_key"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.market_rate_snapshots": {
+      "name": "market_rate_snapshots",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "market_key": {
+          "name": "market_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "borrow_apy": {
+          "name": "borrow_apy",
+          "type": "numeric(20, 10)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "market_rate_snapshots_market_time_idx": {
+          "name": "market_rate_snapshots_market_time_idx",
+          "columns": [
+            {
+              "expression": "market_key",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "timestamp",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "market_rate_snapshots_market_key_markets_unique_key_fk": {
+          "name": "market_rate_snapshots_market_key_markets_unique_key_fk",
+          "tableFrom": "market_rate_snapshots",
+          "tableTo": "markets",
+          "columnsFrom": [
+            "market_key"
+          ],
+          "columnsTo": [
+            "unique_key"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.markets": {
+      "name": "markets",
+      "schema": "",
+      "columns": {
+        "unique_key": {
+          "name": "unique_key",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "chain_id": {
+          "name": "chain_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "collateral_symbol": {
+          "name": "collateral_symbol",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "collateral_address": {
+          "name": "collateral_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "collateral_decimals": {
+          "name": "collateral_decimals",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "loan_symbol": {
+          "name": "loan_symbol",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "loan_address": {
+          "name": "loan_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "loan_decimals": {
+          "name": "loan_decimals",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lltv": {
+          "name": "lltv",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "apr_cap_bps": {
+          "name": "apr_cap_bps",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.reimbursements": {
+      "name": "reimbursements",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "accrual_id": {
+          "name": "accrual_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "borrower_address": {
+          "name": "borrower_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "market_key": {
+          "name": "market_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "day": {
+          "name": "day",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "amount_usd": {
+          "name": "amount_usd",
+          "type": "numeric(30, 6)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'0'"
+        },
+        "tx_hash": {
+          "name": "tx_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "processed_at": {
+          "name": "processed_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "reimbursements_accrual_id_idx": {
+          "name": "reimbursements_accrual_id_idx",
+          "columns": [
+            {
+              "expression": "accrual_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "reimbursements_accrual_id_borrower_daily_accruals_id_fk": {
+          "name": "reimbursements_accrual_id_borrower_daily_accruals_id_fk",
+          "tableFrom": "reimbursements",
+          "tableTo": "borrower_daily_accruals",
+          "columnsFrom": [
+            "accrual_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

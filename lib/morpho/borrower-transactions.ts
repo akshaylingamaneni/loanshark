@@ -22,6 +22,14 @@ const MARKET_TRANSACTIONS_QUERY_WITH_USER = `
         user {
           address
         }
+        data {
+          __typename
+          ... on MarketTransferTransactionData {
+            assets
+            assetsUsd
+            shares
+          }
+        }
       }
     }
   }
@@ -48,6 +56,14 @@ const MARKET_TRANSACTIONS_QUERY = `
         user {
           address
         }
+        data {
+          __typename
+          ... on MarketTransferTransactionData {
+            assets
+            assetsUsd
+            shares
+          }
+        }
       }
     }
   }
@@ -61,6 +77,12 @@ export type MarketTransaction = {
   type: TransactionType;
   user: {
     address: string;
+  };
+  data: {
+    __typename: string;
+    assets?: string | null;
+    assetsUsd?: number | null;
+    shares?: string | null;
   };
 };
 
@@ -120,4 +142,3 @@ export function getFirstBorrowTimestamp(transactions: MarketTransaction[]): numb
 
   return Math.min(...borrowTransactions.map((tx) => Number(tx.timestamp)));
 }
-

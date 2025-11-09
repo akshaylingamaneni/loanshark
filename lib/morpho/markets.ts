@@ -11,13 +11,14 @@ const MARKETS_QUERY = `
     ) {
       items {
         uniqueKey
-        loanAsset { symbol }
-        collateralAsset { symbol }
+        loanAsset { symbol address decimals }
+        collateralAsset { symbol address decimals }
         lltv
         state {
           supplyAssetsUsd
           borrowAssetsUsd
           utilization
+          borrowApy
           netSupplyApy
           netBorrowApy
         }
@@ -28,13 +29,14 @@ const MARKETS_QUERY = `
 
 type MarketResponse = {
   uniqueKey: string;
-  loanAsset: { symbol: string } | null;
-  collateralAsset: { symbol: string } | null;
+  loanAsset: { symbol: string; address: string; decimals: number } | null;
+  collateralAsset: { symbol: string; address: string; decimals: number } | null;
   lltv: string;
   state: {
     supplyAssetsUsd: number;
     borrowAssetsUsd: number;
     utilization: number;
+    borrowApy: number;
     netSupplyApy: number;
     netBorrowApy: number;
   } | null;
@@ -69,4 +71,3 @@ export async function getMarkets(chainId: number[], first: number = 100): Promis
       state: market.state!,
     }));
 }
-
