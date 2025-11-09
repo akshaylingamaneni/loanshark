@@ -43,3 +43,13 @@ We use the Morpho GraphQL API to fetch the markets and borrowers. Once we have t
 
 4. **Persist accruals & reimbursements**  
    The script stores the per-segment breakdown, daily totals, and `max(0, actual - capped)` reimbursement in Postgres (`borrower_daily_accruals`, `reimbursements`). These rows drive both the dashboard metrics and the eventual payout automation.
+
+
+## Assumptions & Limitations
+
+1. We are only reimbursements based on Morpho's MarketBorrow/MarketRepay transactions.
+2. We are only pulling the top 1000 borrowers
+3. We are are manualy setting the APR caps for each market in the `MARKET_CAPS` object.
+4. We are using day and mid day snapshots to calculate the reimbursements.
+5. A day's starting principal is taken form yesterday's stored position. If there is no stored row then we use the borrowAssetsUsd value from the borrower, or fallback to borrowAssets * priceUsd.
+6. We are converting the APY to a continuous per-second rate using the formula `r = ln(1 + apy) / SECONDS_PER_YEAR` and reimbursement is calculated as `max(0, actual - capped)`.

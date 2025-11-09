@@ -2,12 +2,11 @@
 
 import Link from "next/link"
 import {
+  IconAlertTriangle,
   IconChartBar,
   IconDashboard,
-  IconFolder,
   IconInnerShadowTop,
-  IconListDetails,
-  IconUsers
+  IconUsers,
 } from "@tabler/icons-react"
 import * as React from "react"
 
@@ -29,24 +28,19 @@ const data = {
       icon: IconDashboard,
     },
     {
-      title: "Borrowers",
-      url: "/dashboard/borrowers",
-      icon: IconUsers,
+      title: "Alerts",
+      url: "/dashboard/alerts",
+      icon: IconAlertTriangle,
     },
     {
-      title: "Lifecycle",
-      url: "#",
-      icon: IconListDetails,
-    },
-    {
-      title: "Analytics",
-      url: "#",
+      title: "Breakdown",
+      url: "/dashboard/breakdown",
       icon: IconChartBar,
     },
     {
-      title: "Projects",
-      url: "#",
-      icon: IconFolder,
+      title: "Borrowers",
+      url: "/dashboard/borrowers",
+      icon: IconUsers,
     },
   ],
   navSecondary: [

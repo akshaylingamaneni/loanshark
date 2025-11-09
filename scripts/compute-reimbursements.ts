@@ -121,6 +121,11 @@ function resolvePriceUsd(
     }
   }
 
+  const marketPrice = market.loanAsset.priceUsd;
+  if (marketPrice && Number.isFinite(marketPrice)) {
+    return marketPrice;
+  }
+
   return null;
 }
 

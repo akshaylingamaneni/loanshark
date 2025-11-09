@@ -38,6 +38,7 @@ export type Market = {
     symbol: string;
     address: string;
     decimals: number;
+    priceUsd?: number | null;
   };
   collateralAsset: {
     symbol: string;

@@ -11,7 +11,7 @@ const MARKETS_QUERY = `
     ) {
       items {
         uniqueKey
-        loanAsset { symbol address decimals }
+        loanAsset { symbol address decimals priceUsd }
         collateralAsset { symbol address decimals }
         lltv
         state {
@@ -29,7 +29,7 @@ const MARKETS_QUERY = `
 
 type MarketResponse = {
   uniqueKey: string;
-  loanAsset: { symbol: string; address: string; decimals: number } | null;
+  loanAsset: { symbol: string; address: string; decimals: number; priceUsd?: number | null } | null;
   collateralAsset: { symbol: string; address: string; decimals: number } | null;
   lltv: string;
   state: {
