@@ -21,7 +21,7 @@ CREATE TABLE "borrower_positions" (
 	"borrow_assets_usd" numeric(30, 4),
 	"loan_asset_price_usd" numeric(30, 8),
 	"borrow_shares" numeric(40, 0) NOT NULL,
-	"borrow_apy_snapshot" numeric(20, 10),
+	"net_borrow_apy_snapshot" numeric(20, 10),
 	"last_snapshot_at" timestamp,
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
@@ -30,7 +30,7 @@ CREATE TABLE "market_rate_snapshots" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"market_key" text NOT NULL,
 	"timestamp" timestamp NOT NULL,
-	"borrow_apy" numeric(20, 10) NOT NULL,
+	"net_borrow_apy" numeric(20, 10) NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint

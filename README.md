@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Loanshark
 
-## Getting Started
+Loanshark is a project to track the various markets in the polygon ecosystem and calculate the daily reimbursements for each market based on the APR cap and the interest accrued.
+
+## Getting Started 
 
 First, run the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Running the tests
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm test
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Running the tests with UI
 
-## Learn More
+```bash
+pnpm test:ui
+```
 
-To learn more about Next.js, take a look at the following resources:
+## How it works?
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+We use the Morpho GraphQL API to fetch the markets and borrowers. Once we have the markets and borrowers, we fetch the historical APY data for each market and store it in the database. We then calculate the daily reimbursements for each borrower based on the APR cap and the interest accrued. We store the reimbursements in the database and then we can use the data to display the reimbursements in the dashboard.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### How we calculate the daily reimbursements?
 
-## Deploy on Vercel
+1. **Ingest hourly net borrow APY snapshots**  
+   For every capped Morpho market we hit `historicalState.netBorrowApy` (hour granularity) for the target 24 h window and store the resulting curve in `market_rate_snapshots`. If Morpho doesn’t return a timeseries we fall back to the latest on-chain snapshot so the day is still priced. (was getting NaN errors when Morpho didn't return a timeseries)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. **Rebuild each borrower’s principal path**  
+   Starting from the latest stored position we replay that borrower’s Morpho `MarketBorrow`/`MarketRepay` transactions inside the same 24 h window. Each cashflow becomes an event `(timestamp, deltaPrincipal)` so we know when principal changes before/after compounding.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. **Integrate floating vs capped rates**  
+   `calculateDailyReimbursement` walks the day segment by segment. For every interval it:
+   - Converts the sampled APY to a continuous per-second rate `r = ln(1 + apy) / SECONDS_PER_YEAR`.
+   - Applies the principal growth `P * growthFromRate(r, deltaSeconds)` to get actual interest.
+   - Repeats the same math with the cap APR to get what the borrower *should* have paid.
+
+4. **Persist accruals & reimbursements**  
+   The script stores the per-segment breakdown, daily totals, and `max(0, actual - capped)` reimbursement in Postgres (`borrower_daily_accruals`, `reimbursements`). These rows drive both the dashboard metrics and the eventual payout automation.

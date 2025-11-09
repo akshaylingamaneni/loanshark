@@ -11,6 +11,7 @@ export type MarketPosition = {
 
 export type MarketState = {
   borrowApy: number;
+  netBorrowApy: number;
 };
 
 export type BorrowerData = {
@@ -19,7 +20,7 @@ export type BorrowerData = {
   borrowShares: string;
   borrowAssets: string;
   borrowAssetsUsd: number | null;
-  borrowApy: number;
+  netBorrowApy: number;
   market: Market;
 };
 

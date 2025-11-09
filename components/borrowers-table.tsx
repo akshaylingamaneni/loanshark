@@ -109,14 +109,14 @@ const columns: ColumnDef<BorrowerData>[] = [
     cell: ({ row }) => formatCurrency(row.original.borrowAssetsUsd),
   },
   {
-    accessorKey: "borrowApy",
+    accessorKey: "netBorrowApy",
     header: ({ column }) => (
       <Button
         variant="ghost"
         className="h-8 data-[state=open]:bg-accent -ml-3 hover:bg-transparent"
         onClick={() => column.toggleSorting()}
       >
-        <span>Borrow APY</span>
+        <span>Borrow APY (Net)</span>
         {column.getIsSorted() === "desc" ? (
           <IconArrowDown className="ml-2 size-4" />
         ) : column.getIsSorted() === "asc" ? (
@@ -126,7 +126,7 @@ const columns: ColumnDef<BorrowerData>[] = [
         )}
       </Button>
     ),
-    cell: ({ row }) => formatPercent(row.original.borrowApy),
+    cell: ({ row }) => formatPercent(row.original.netBorrowApy),
   },
 ]
 
@@ -269,4 +269,3 @@ export function BorrowersTable({ borrowers }: { borrowers: BorrowerData[] }) {
     </div>
   )
 }
-

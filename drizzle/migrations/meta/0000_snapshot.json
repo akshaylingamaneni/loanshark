@@ -178,8 +178,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "borrow_apy_snapshot": {
-          "name": "borrow_apy_snapshot",
+        "net_borrow_apy_snapshot": {
+          "name": "net_borrow_apy_snapshot",
           "type": "numeric(20, 10)",
           "primaryKey": false,
           "notNull": false
@@ -264,8 +264,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "borrow_apy": {
-          "name": "borrow_apy",
+        "net_borrow_apy": {
+          "name": "net_borrow_apy",
           "type": "numeric(20, 10)",
           "primaryKey": false,
           "notNull": true

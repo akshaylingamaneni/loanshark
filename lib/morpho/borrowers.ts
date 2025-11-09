@@ -16,7 +16,7 @@ const BORROWERS_QUERY = `
       }
     }
     marketByUniqueKey(uniqueKey: $key, chainId: $cid) {
-      state { borrowApy }
+      state { borrowApy netBorrowApy }
     }
   }
 `;
@@ -39,7 +39,7 @@ export async function getBorrowersForMarket(
     cid: chainId,
   });
 
-  const borrowApy = data.marketByUniqueKey.state.borrowApy;
+  const { netBorrowApy } = data.marketByUniqueKey.state;
 
   return data.marketPositions.items.map((position) => ({
     address: position.user.address,
@@ -47,7 +47,7 @@ export async function getBorrowersForMarket(
     borrowShares: position.state.borrowShares,
     borrowAssets: position.state.borrowAssets,
     borrowAssetsUsd: position.state.borrowAssetsUsd,
-    borrowApy,
+    netBorrowApy,
     market,
   }));
 }
@@ -60,4 +60,3 @@ export async function getAllBorrowers(chainId: number = 137): Promise<BorrowerDa
 
   return allBorrowers.flat();
 }
-

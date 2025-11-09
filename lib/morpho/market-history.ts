@@ -9,6 +9,10 @@ const HISTORICAL_BORROW_APY_QUERY = `
           x
           y
         }
+        netBorrowApy(options: { startTimestamp: $start, endTimestamp: $end, interval: HOUR }) {
+          x
+          y
+        }
       }
     }
   }
@@ -24,11 +28,12 @@ type HistoricalBorrowApyResponse = {
     uniqueKey: string;
     historicalState: {
       borrowApy: HistoricalApyPoint[];
+      netBorrowApy?: HistoricalApyPoint[];
     };
   } | null;
 };
 
-export async function getHistoricalBorrowApy(
+export async function getHistoricalNetBorrowApy(
   marketKey: string,
   chainId: number,
   startTimestamp: number,
@@ -45,7 +50,8 @@ export async function getHistoricalBorrowApy(
     return [];
   }
 
-  return data.marketByUniqueKey.historicalState.borrowApy;
+  const { borrowApy = [], netBorrowApy = [] } = data.marketByUniqueKey.historicalState;
+  return netBorrowApy.length > 0 ? netBorrowApy : borrowApy;
 }
 
 export function calculateAverageApy(points: HistoricalApyPoint[]): number {
@@ -77,4 +83,3 @@ export function getDailyAverageApy(
 
   return calculateAverageApy(dayPoints);
 }
-

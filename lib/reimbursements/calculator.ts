@@ -213,7 +213,7 @@ export function calculateDailyReimbursement(
     appliedEvents.push(events[eventIndex]!);
     eventIndex++;
   }
-
+  console.log(actualInterest, cappedInterest);
   const reimbursement = Math.max(0, actualInterest - cappedInterest);
 
   return {

@@ -38,7 +38,7 @@ export function SectionCards({
   const totalSupply = markets.reduce((sum, m) => sum + m.state.supplyAssetsUsd, 0)
   const totalBorrow = markets.reduce((sum, m) => sum + m.state.borrowAssetsUsd, 0)
   const avgUtilization = markets.reduce((sum, m) => sum + m.state.utilization, 0) / markets.length
-  const avgBorrowSnapshot = markets.reduce((sum, m) => sum + m.state.borrowApy, 0) / markets.length
+  const avgBorrowSnapshot = markets.reduce((sum, m) => sum + m.state.netBorrowApy, 0) / markets.length
   const totalReimbursement = reimbursementSummary?.totalReimbursementUsd ?? 0
   const borrowersAboveCap = reimbursementSummary?.borrowersAboveCap ?? 0
   const borrowerCount = reimbursementSummary?.borrowerCount ?? 0
@@ -109,7 +109,7 @@ export function SectionCards({
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Avg Borrow APY (Snapshot)</CardDescription>
+          <CardDescription>Avg Borrow APY (Net Snapshot)</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {formatPercent(avgBorrowSnapshot)}
           </CardTitle>
@@ -123,7 +123,7 @@ export function SectionCards({
           <div className="line-clamp-1 flex gap-2 font-medium">
             Average across all markets
           </div>
-          <div className="text-muted-foreground">Instantaneous borrow rate snapshot</div>
+          <div className="text-muted-foreground">Instantaneous net borrow rate snapshot</div>
         </CardFooter>
       </Card>
       <Card className="@container/card">

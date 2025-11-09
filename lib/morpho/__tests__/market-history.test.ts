@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
-  getHistoricalBorrowApy,
+  getHistoricalNetBorrowApy,
   calculateAverageApy,
   getDailyAverageApy,
 } from "../market-history";
@@ -19,7 +19,7 @@ describe("Market History Queries", () => {
     const now = Math.floor(Date.now() / 1000);
     const start = now - 7 * 24 * 60 * 60;
 
-    const apyPoints = await getHistoricalBorrowApy(marketKey, chainId, start, now);
+    const apyPoints = await getHistoricalNetBorrowApy(marketKey, chainId, start, now);
 
     console.log(`\nHistorical APY Data for Market ${marketKey.slice(0, 10)}...`);
     console.log(`Found ${apyPoints.length} data points`);
@@ -81,7 +81,7 @@ describe("Market History Queries", () => {
     const now = Math.floor(Date.now() / 1000);
     const start = now - 7 * 24 * 60 * 60;
 
-    const apyPoints = await getHistoricalBorrowApy(marketKey, chainId, start, now);
+    const apyPoints = await getHistoricalNetBorrowApy(marketKey, chainId, start, now);
 
     if (apyPoints.length > 0) {
       const yesterday = new Date();
@@ -107,7 +107,7 @@ describe("Market History Queries", () => {
     console.log("\nTesting markets from API:\n");
 
     for (const market of markets.slice(0, 3)) {
-      const apyPoints = await getHistoricalBorrowApy(market.uniqueKey, chainId, start, now);
+      const apyPoints = await getHistoricalNetBorrowApy(market.uniqueKey, chainId, start, now);
 
       if (apyPoints.length > 0) {
         const avgApy = calculateAverageApy(apyPoints);

@@ -26,10 +26,9 @@ async function main() {
   //   console.log(`   Market: ${borrower.marketKey.slice(0, 10)}...`);
   //   console.log(`   Borrow Assets: ${borrower.borrowAssets}`);
   //   console.log(`   Borrow Assets USD: ${borrower.borrowAssetsUsd ?? "N/A"}`);
-  //   console.log(`   Borrow APY: ${(borrower.borrowApy * 100).toFixed(2)}%`);
+  //   console.log(`   Borrow APY: ${(borrower.netBorrowApy * 100).toFixed(2)}%`);
   //   console.log("");
   // });
 }
 
 main().catch(console.error);
-

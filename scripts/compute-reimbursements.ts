@@ -9,7 +9,7 @@ import {
   reimbursements,
 } from "@/lib/db/schema";
 import { getBorrowersForMarket } from "@/lib/morpho/borrowers";
-import { getHistoricalBorrowApy } from "@/lib/morpho/market-history";
+import { getHistoricalNetBorrowApy } from "@/lib/morpho/market-history";
 import { getMarkets } from "@/lib/morpho/markets";
 import { getBorrowerTransactions } from "@/lib/morpho/borrower-transactions";
 import { calculateDailyReimbursement } from "@/lib/reimbursements/calculator";
@@ -93,7 +93,7 @@ async function persistSnapshots(marketKey: string, points: RatePoint[]) {
       points.map((point) => ({
         marketKey,
         timestamp: fromUnix(point.timestamp),
-        borrowApy: numericString(point.apy, 10),
+        netBorrowApy: numericString(point.apy, 10),
       }))
     )
     .onConflictDoNothing();
@@ -182,7 +182,13 @@ async function processBorrower(params: {
     console.warn(`Skipping borrower ${borrower.address} - no principal to accrue.`);
     return;
   }
-
+  console.log(
+    market.uniqueKey,
+    'avgAPY',
+    ratePoints.reduce((a, p) => a + Number(p.apy || 0), 0) / ratePoints.length,
+    "cap",
+    capApr
+  );
   const transactions = await getBorrowerTransactions(
     borrower.address,
     borrower.marketKey,
@@ -193,12 +199,26 @@ async function processBorrower(params: {
 
   const events = toEventsUsd(transactions, market.loanAsset.decimals, priceUsd);
 
+  const effectiveRatePoints =
+    ratePoints.length > 0
+      ? ratePoints
+      : [
+          {
+            timestamp: dayStart,
+            apy:
+              market.state?.netBorrowApy ??
+              market.state?.borrowApy ??
+              borrower.netBorrowApy ??
+              0,
+          },
+        ];
+
   const result = calculateDailyReimbursement({
     dayStart,
     dayEnd,
     startingPrincipal: startingPrincipalUsd,
     capApr,
-    ratePoints,
+    ratePoints: effectiveRatePoints,
     events,
   });
 
@@ -266,7 +286,7 @@ async function processBorrower(params: {
       borrowAssetsUsd: numericString(result.endingPrincipal, 6),
       loanAssetPriceUsd: numericString(priceUsd, 8),
       borrowShares: borrower.borrowShares,
-      borrowApySnapshot: numericString(borrower.borrowApy, 8),
+      netBorrowApySnapshot: numericString(borrower.netBorrowApy, 8),
       lastSnapshotAt: fromUnix(dayEnd),
     })
     .onConflictDoUpdate({
@@ -279,7 +299,7 @@ async function processBorrower(params: {
         borrowAssetsUsd: numericString(result.endingPrincipal, 6),
         loanAssetPriceUsd: numericString(priceUsd, 8),
         borrowShares: borrower.borrowShares,
-        borrowApySnapshot: numericString(borrower.borrowApy, 8),
+        netBorrowApySnapshot: numericString(borrower.netBorrowApy, 8),
         lastSnapshotAt: fromUnix(dayEnd),
         updatedAt: new Date(),
       },
@@ -311,11 +331,27 @@ async function main() {
 
     await upsertMarketMetadata(market, cap.capApr);
 
-    const apyPointsRaw = await getHistoricalBorrowApy(market.uniqueKey, cap.chainId, dayStart, dayEnd);
+    const apyPointsRaw = await getHistoricalNetBorrowApy(market.uniqueKey, cap.chainId, dayStart, dayEnd);
     const ratePoints: RatePoint[] = apyPointsRaw.map((point) => ({
       timestamp: Number(point.x),
       apy: Number(point.y ?? 0),
     }));
+
+    if (ratePoints.length === 0) {
+      const fallbackApy =
+        market.state?.netBorrowApy ??
+        market.state?.borrowApy ??
+        0;
+      ratePoints.push({
+        timestamp: dayStart,
+        apy: fallbackApy,
+      });
+      console.warn(
+        `No historical APY data for market ${market.uniqueKey}. Falling back to snapshot ${(
+          fallbackApy * 100
+        ).toFixed(4)}%`
+      );
+    }
     await persistSnapshots(market.uniqueKey, ratePoints);
 
     const borrowers = await getBorrowersForMarket(market, cap.chainId);

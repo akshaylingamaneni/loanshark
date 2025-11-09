@@ -33,7 +33,7 @@ export const marketRateSnapshots = pgTable(
       .notNull()
       .references(() => markets.uniqueKey, { onDelete: "cascade" }),
     timestamp: timestamp("timestamp").notNull(),
-    borrowApy: numeric("borrow_apy", { precision: 20, scale: 10 }).notNull(),
+    netBorrowApy: numeric("net_borrow_apy", { precision: 20, scale: 10 }).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => ({
@@ -56,7 +56,7 @@ export const borrowerPositions = pgTable(
     borrowAssetsUsd: numeric("borrow_assets_usd", { precision: 30, scale: 4 }),
     loanAssetPriceUsd: numeric("loan_asset_price_usd", { precision: 30, scale: 8 }),
     borrowShares: numeric("borrow_shares", { precision: 40, scale: 0 }).notNull(),
-    borrowApySnapshot: numeric("borrow_apy_snapshot", { precision: 20, scale: 10 }),
+    netBorrowApySnapshot: numeric("net_borrow_apy_snapshot", { precision: 20, scale: 10 }),
     lastSnapshotAt: timestamp("last_snapshot_at"),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
