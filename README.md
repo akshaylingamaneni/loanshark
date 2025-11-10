@@ -49,7 +49,7 @@ We use the Morpho GraphQL API to fetch the markets and borrowers. Once we have t
 
 1. We are only reimbursements based on Morpho's MarketBorrow/MarketRepay transactions.
 2. We are only pulling the top 1000 borrowers
-3. We are are manualy setting the APR caps for each market in the `MARKET_CAPS` object.
+3. APR caps are stored per market in Postgres (seeded from `DEFAULT_MARKET_CAPS`) and can be managed from the Markets admin UI.
 4. We are using day and mid day snapshots to calculate the reimbursements.
 5. A day's starting principal is taken form yesterday's stored position. If there is no stored row then we use the borrowAssetsUsd value from the borrower, or fallback to borrowAssets * priceUsd.
 6. We are converting the APY to a continuous per-second rate using the formula `r = ln(1 + apy) / SECONDS_PER_YEAR` and reimbursement is calculated as `max(0, actual - capped)`.

@@ -8,6 +8,13 @@
       "when": 1762700180812,
       "tag": "0000_spicy_frank_castle",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1762700181812,
+      "tag": "0001_track_markets",
+      "breakpoints": false
     }
   ]
 }

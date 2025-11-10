@@ -34,6 +34,7 @@ export type MarketConfig = {
 
 export type Market = {
   uniqueKey: string;
+  chainId?: number;
   loanAsset: {
     symbol: string;
     address: string;

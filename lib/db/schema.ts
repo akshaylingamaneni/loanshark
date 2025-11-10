@@ -1,4 +1,5 @@
 import {
+  boolean,
   date,
   integer,
   jsonb,
@@ -21,6 +22,7 @@ export const markets = pgTable("markets", {
   loanDecimals: integer("loan_decimals").notNull(),
   lltv: text("lltv").notNull(),
   aprCapBps: integer("apr_cap_bps").notNull().default(0),
+  isTracked: boolean("is_tracked").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

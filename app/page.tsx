@@ -22,7 +22,7 @@ export default async function Home() {
                 Loanshark
               </p>
               <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
-                Polygon reimbursement ops, at a glance.
+                Expore Polygon Markets.
               </h1>
               <p className="text-lg text-muted-foreground">
                 Monitor Morpho markets, track capped APR programs, and drill into borrowers or alerts

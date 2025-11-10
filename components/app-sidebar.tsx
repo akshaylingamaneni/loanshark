@@ -6,6 +6,7 @@ import {
   IconChartBar,
   IconDashboard,
   IconInnerShadowTop,
+  IconSettings,
   IconUsers,
 } from "@tabler/icons-react"
 import * as React from "react"
@@ -41,6 +42,11 @@ const data = {
       title: "Borrowers",
       url: "/dashboard/borrowers",
       icon: IconUsers,
+    },
+    {
+      title: "Markets",
+      url: "/dashboard/markets",
+      icon: IconSettings,
     },
   ],
   navSecondary: [
