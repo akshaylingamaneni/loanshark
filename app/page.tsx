@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { getMarkets } from "@/lib/morpho/markets";
 import { getDailyReimbursementSummary } from "@/lib/reimbursements/metrics";
 
+export const dynamic = 'force-dynamic'
+
 export default async function Home() {
   const [markets, reimbursementSummary] = await Promise.all([
     getMarkets([137]),
