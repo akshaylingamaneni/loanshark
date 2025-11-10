@@ -26,7 +26,8 @@ async function getLatestDay(): Promise<Date | null> {
   const latest = await db
     .select({ day: borrowerDailyAccruals.day })
     .from(borrowerDailyAccruals)
-    .orderBy(desc(borrowerDailyAccruals.day))
+    // Use creation time so reruns for older days surface immediately.
+    .orderBy(desc(borrowerDailyAccruals.createdAt))
     .limit(1);
 
   return latest[0]?.day ?? null;
