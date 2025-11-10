@@ -26,6 +26,8 @@ const sidebarStyle: SidebarStyle = {
   "--header-height": "calc(var(--spacing) * 12)",
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function Page() {
   const [markets, reimbursementSummary] = await Promise.all([
     getMarkets([137]),

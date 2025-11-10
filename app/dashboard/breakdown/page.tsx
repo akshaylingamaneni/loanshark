@@ -49,6 +49,8 @@ function formatPercent(value: number): string {
   return `${(value * 100).toFixed(2)}%`
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function BreakdownPage() {
   const [markets, summary] = await Promise.all([
     getMarkets([137]),

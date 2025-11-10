@@ -19,6 +19,8 @@ const sidebarStyle: SidebarStyle = {
   "--header-height": "calc(var(--spacing) * 12)",
 };
 
+export const dynamic = 'force-dynamic'
+
 export default async function MarketsPage() {
   const markets = await getManagedMarkets();
 

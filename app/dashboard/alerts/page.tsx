@@ -31,6 +31,8 @@ const sidebarStyle: SidebarStyle = {
   "--header-height": "calc(var(--spacing) * 12)",
 }
 
+export const dynamic = 'force-dynamic'
+
 const UTILIZATION_THRESHOLD = 0.85
 
 function formatCurrency(value: number): string {
